@@ -1,0 +1,1 @@
+aux + funcion(0,0,i)
