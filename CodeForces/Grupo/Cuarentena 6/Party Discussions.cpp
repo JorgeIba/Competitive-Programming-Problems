@@ -35,8 +35,6 @@ lli binaryS(lli k)
     return res;
 }
 
-
-
 int main()
 {
     lli k; cin>>k;
@@ -62,9 +60,5 @@ int main()
         }
         //cout<<sumParcial<<endl;
     }
-    
-
-
-
     return 0;
 }

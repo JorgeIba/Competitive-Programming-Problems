@@ -1,48 +1,55 @@
 #include <bits/stdc++.h>
+
 #define lli long long int
+#define endl "\n"
+#define debug(n) cout<<n<<endl
+#define debug2(a, b) cout<<a<<" "<<b<<endl;
+#define forn(i, in, fin) for(int i = in; i<fin; i++)
+#define all(v) v.begin(), v.end()
+#define fastIO(); ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0);
 
 using namespace std;
 
+vector< double > p;
+vector< vector<lli> > dp;
+lli posibles;
 lli n; 
-vector<lli> stones;
 
-lli dp[100010];
 
-lli funcion(lli index, lli suma)
+lli f(lli index, lli taken)
 {
-    if(index >= n)
+    if(taken > posibles) return 0;
+    if(index == n) return 1;
+    if(dp[index][taken] != -1) 
     {
-        return 1000000000LL;
+        cout<<dp[index][taken]<<" ";
+        return dp[index][taken];
     }
-    if(index == n-1)
-    {
-        return suma;
-    }
-    if(dp[index] != -1)
-    {
-        return dp[index];
-    }
-    
 
-    lli uno = funcion(index + 1, suma+abs(stones[index] - stones[index+1]));
-    lli dos = funcion(index + 2, suma+abs(stones[index] - stones[index+2]));
+    lli actual = p[index];
 
-    return dp[index] =  min(uno,dos);
+    return dp[index][taken] = f(index+1, taken) * actual + f(index+1, taken+1)*(100-actual);
 }
+
 
 
 int main()
 {
-    memset(dp, -1, sizeof(dp));
+    fastIO();
     cin>>n;
-    stones.resize(n);
-    for(auto &x: stones)
+    p.resize(n);
+    posibles = (n-1)/2;
+    dp.assign(n, vector<lli>(1600, -1));
+    //dp.assign(n, vector<lli>(1600, -1));
+    vector<double> aux(n);
+    for(auto &x: aux)
     {
         cin>>x;
     }
-
-    cout<<funcion(0, 0)<<endl;
-
-
+    forn(i,0,n)
+    {
+        p[i] = aux[i] * 100;
+    }
+    cout<< fixed << setprecision(10) << f(0,0) / pow(100, n) <<endl;
     return 0;
 }
