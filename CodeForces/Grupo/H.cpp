@@ -1,61 +1,100 @@
 #include <bits/stdc++.h>
 #define lli long long int
-
+ 
 using namespace std;
-
+ 
 string s; 
-lli dp[500010];
-
+//lli dp[500010];
+vector< vector<lli> > dp(2, vector<lli>(500010, -1));
+ 
 lli funcion(lli index, lli suma) //Abre -> 0, cierra -> 1
 {
-    if((index > s.length())or(suma < 0))
+    if(index > s.length() || suma < 0) return 0;
+    if(index == s.length() && suma == 0) return 1;
+
+    if(dp[0][index] == 1) return 1;
+    if(dp[1][index] == 1) return 1;
+
+    bool flagAbrir =true, flagCerrar = true;
+
+    if(dp[0][index] == 0) flagAbrir = false;
+    if(dp[1][index] == 0) flagCerrar = false;
+
+    char actual = s[index];
+
+    if(actual == '(')
     {
-        return 0;
+        return funcion(index+1, suma + 1);
     }
-    if((index==s.length())and(suma==0))
+    if(actual == ')')
     {
-        return 1;
+        return funcion(index+1, suma - 1);
     }
-    if( dp[index] != -1)
+    lli abrir = 0;
+    if(flagAbrir)
     {
-        return dp[index];
+        abrir = funcion(index+1, suma + 1);
     }
-    char aux = s[index];
-    if(aux=='(')
+    lli cerrar = 0;
+    if(flagCerrar)
     {
-        return funcion(index+1, suma+1);
+        cerrar = funcion(index + 1, suma - 1);
     }
-    else if (aux == ')')
+    
+    if(abrir == 1)
     {
-        return funcion(index + 1, suma -1);
+        return dp[0][index] = 1;
+    }
+    if(cerrar == 1)
+    {
+        return dp[1][index] = 1;
+    }
+    return 0;
+}
+ 
+
+void rec(lli index, lli suma, string &res)
+{
+    if(index > s.length() || suma < 0) return;
+
+
+    if(s[index] == '?')
+    {
+        if(dp[0][index] == 1)
+        {
+            res[index] = '(';
+            rec(index+1, suma+1, res);
+            return;
+        }
+        res[index] = ')';
+        rec(index+1, suma - 1, res);
+        return;
+    }
+    if(s[index] == ')')
+    {
+        res[index] = ')';
+        rec(index+1, suma -1, res);
     }
     else
     {
-        lli ab = funcion(index+1, suma+1);
-        lli cer = funcion(index + 1, suma -1);
-        if(ab == 1)
-        {
-            s[index] = '(';
-        }
-        else if(cer == 1)
-        {
-            s[index] = ')';
-        }
-        return dp[index] = max(ab,cer);
+        res[index] = '(';
+        rec(index+1, suma + 1, res);
     }
+    
+    
 }
-
-
+ 
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(0);
     cout.tie(0);
-    memset(dp, -1, sizeof(dp));
     cin>>s;
     if(funcion(0,0))
     {
-        cout<<s<<endl;
+        string res(s.length(), '(');
+        rec(0,0,res);
+        cout<<res<<endl;
     }
     else
     {
@@ -63,6 +102,6 @@ int main()
     }
     
     
-
+ 
     return 0;
 }
