@@ -10,41 +10,41 @@
 
 using namespace std;
 
-lli n, k; 
-vector<lli> candies;
-
-
-lli funcion(lli index, lli suma)
-{
-    if(suma == k && index <=n) return 1;
-    if(index > n) return 0;
-
-    lli res = 0;
-    for(int i = 0; i <= candies[index]; i++)
-    {
-        res += funcion(index+1, suma + i );
-    }
-    return res;
-}
-
-
-
+const lli MOD = 1e9 + 7;
 
 int main()
 {
     fastIO();
-    cin>>n>>k;
-    candies.resize(n);
+    lli n, k;  cin>>n>>k;
+    vector<lli> candies(n);
+    vector<lli> prefix(100010);
     for(auto &x: candies)
     {
         cin>>x;
     }
-    lli res = 0;
-    for(int i = 0; i<= candies[0]; i++)
+    vector<vector<lli>> dp(n+1, vector<lli>(k+1, 0));
+
+    
+    for(int i = 0; i<=min(k, candies[0]); i++)
     {
-        res += funcion(1, i);
+        dp[0][i] = 1;
     }
-    cout<<res<<endl;
+    for(int i = 1; i<n; i++)
+    {
+        fill(all(prefix), 0);
+        prefix[0] = dp[i-1][0];
+        for(int l = 1; l<=k; l++ )
+        {
+            prefix[l] = prefix[l-1] + dp[i-1][l];
+        }
+        for(lli j = k ; j>=0; j--)
+        {
+            lli minimo = min(j, candies[i]);   
+            dp[i][j] = (prefix[j] -  (j-minimo-1 >= 0? prefix[j-minimo-1]: 0))%MOD ;
+        }
+    }
+
+    cout<<dp[n-1][k]<<endl;
     
 
     return 0;

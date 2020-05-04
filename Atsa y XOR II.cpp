@@ -12,7 +12,25 @@ using namespace std;
 
 int main()
 {
-    //fastIO();
+    fastIO();
+    lli n; cin>>n;
+    vector<lli> nums(n);
+    for(auto &x: nums)
+    {
+        cin>>x;
+    }
+    lli best = nums[0] ^ nums[1];
+    for(int i = 0; i<n; i++)
+    {
+        lli aux = nums[i];
+        for(int j= i+1; j<n; j++)
+        {
+            aux^= nums[j];
+            best = max(best, aux);
+        }
+    }
+    cout<<best<<endl;
+    
 
     return 0;
 }
