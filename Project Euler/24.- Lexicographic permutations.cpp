@@ -62,7 +62,7 @@ int main()
 
     for(auto x: ans)
     {
-        cout<<x;
+        cout<<x<<" ";
     }
     cout<<endl;
     

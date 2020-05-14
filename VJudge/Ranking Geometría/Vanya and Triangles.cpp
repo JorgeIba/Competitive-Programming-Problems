@@ -11,13 +11,13 @@
 using namespace std;
 
 struct point{
-	lli x, y;
+	int x, y;
 	point(): x(0), y(0){}
 	point(lli x, lli y): x(x), y(y){}
 };
 
 istream &operator>>(istream &is, point & p){return is >> p.x >> p.y;}
-ostream &operator<<(ostream &os, const point & p){return os << "(" << p.x << ", " << p.y << ")";}
+
 
 
 int main()
@@ -31,7 +31,7 @@ int main()
     }
 
     lli res = (n-2)*(n-1)*n / 6;
-    map< tuple<lli,lli,lli>, set< pair<lli,lli> > > rectas;
+    map< tuple<int,int,int>, set< pair<int,int> > > rectas;
     for(int i = 0; i<n; i++)
     {
         for(int j = i+1; j<n; j++)
@@ -42,8 +42,8 @@ int main()
             {
                 a = -a, b = -b, c = -c;
             }
-            lli gcd = __gcd(a,abs(b));
-            gcd = __gcd(gcd, abs(c));
+            lli gcd = __gcd(a, b);
+            gcd = __gcd(gcd, c );
             a/=gcd, b/=gcd, c/=gcd;
             rectas[{a,b,c}].insert({x1,y1});
             rectas[{a,b,c}].insert({x2, y2});
@@ -52,8 +52,11 @@ int main()
 
     for(auto x: rectas)
     {
-        lli t = x.second.size();
-        res -= ((t-2)*(t-1)*t)/6;
+        if(x.second.size() > 2)
+        {
+            lli t = x.second.size();
+            res -= ((t-2)*(t-1)*t)/6;
+        }
     }
     cout<<res<<endl;
 

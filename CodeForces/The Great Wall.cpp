@@ -18,7 +18,7 @@ struct Edge
     void addFlow(lli flow)
     {
         this->flow += flow;
-        //this->res->flow -= flow;
+        this->res->flow -= flow;
     }
 };
 
@@ -35,11 +35,11 @@ lli n, m;
 void addEdge(lli u, lli v, lli capacity, lli ix, lli iy)
 {
     Edge* uv = new Edge(v, 0, capacity, ix, iy);
-    //Edge* vu = new Edge(u, 0, capacity);
-    //uv->res = vu;
-    //vu->res = uv;
+    Edge* vu = new Edge(u, 0, 0, ix, iy);
+    uv->res = vu;
+    vu->res = uv;
     adjList[u].push_back(uv);
-    //adjList[v].push_back(vu);
+    adjList[v].push_back(vu);
 }
 
 
@@ -122,6 +122,16 @@ void addAdj(lli i, lli j)
         if(0<= i+di && i+di < n && 0<=j+dj && j+dj < m && mat[i+di][j+dj] != '#')
         {
             addEdge( mappeo(i,j) + 1, mappeo(i+di,j+dj), INF, i, j);
+            /*
+            if(mat[i+di][j+dj] == '.')
+            {
+                addEdge( mappeo(i+di,j+dj), mappeo(i+di,j+dj) + 1, 1);
+            }
+            else
+            {
+                addEdge( mappeo(i+di,j+dj), mappeo(i+di,j+dj) + 1, INF);    
+            }
+            */
         }
     }
 }
@@ -148,10 +158,10 @@ int main()
     fastIO();
     cin>>n>>m;
     mat.resize(n);
-    adjList.resize(n*m*6);
-    visited.resize(n*m*6);
-    pos.resize(n*m*6);
-    dis.resize(n*m*6);
+    adjList.resize(n*m*2);
+    visited.resize(n*m*2, false);
+    pos.resize(n*m*2);
+    dis.resize(n*m*2);
     forn(i,0,n)
     {
         cin>>mat[i];
@@ -166,7 +176,7 @@ int main()
         }
     }
     lli maxFlow = dinic(s,t);
-    if(maxFlow > n*m)
+    if(maxFlow >= INF)
     {
         cout<<-1<<endl;
     }
@@ -174,24 +184,18 @@ int main()
     {
         cout<<maxFlow<<endl;
         dfs(s);
-        lli count = 0;
-        for(int i = 0; i<=n*m*4; i++)
+        for(int i = 0; i<n*m*2; i++)
         {
             if(!visited[i]) continue;
             for(Edge* v: adjList[i])    
             {
-                if(!visited[v->to]) 
+                if(!visited[v->to] && v->capacity == v->flow && v->flow == 1) 
                 {
                     lli x = v->ix, y = v->iy;
-                    if(mat[x][y] == '.')
-                    {
-                        mat[x][y] = '+';
-                        count++;
-                    } 
+                    mat[x][y] = '+';
                 }
             }
         }
-        assert(count==maxFlow);
         forn(i,0,n)
         {
             cout<<mat[i]<<endl;
