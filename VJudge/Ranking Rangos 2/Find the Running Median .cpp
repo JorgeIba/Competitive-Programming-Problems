@@ -10,8 +10,6 @@
 
 using namespace std;
 
-mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
-uniform_int_distribution<> dis(numeric_limits<int>::min(), numeric_limits<int>::max());
 
 template<typename T>
 struct TreapNode{
@@ -280,20 +278,26 @@ struct Treap{
 	void inorder(){inorder(root);}
 };
 
-
 int main()
 {
-    //fastIO();
+    fastIO();
     lli n; cin>>n;
     Treap<lli> *T = new Treap<lli>();
     forn(i,0,n)
     {
         lli x; cin>>x;
         T->insert(x);
-		T->inorder();
-		cout<<endl;
-    }    
-
-
-    return 0;
+        if(~i&1)
+        {
+            lli mid = T->root->size / 2;
+            //cout<<T->root->size<<" "<<mid<<endl;
+            cout<<T->kth(mid)<<".0\n";
+        }
+        else
+        {
+            lli mid = T->root->size / 2;
+            double res = double(T->kth(mid) + T->kth(mid-1))/2;
+            cout<<fixed<<setprecision(1)<<res<<endl;
+        }
+    }
 }
