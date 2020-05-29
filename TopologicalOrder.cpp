@@ -3,28 +3,22 @@
 
 using namespace std;
 
+bool visited[400100];
+vector< priority_queue< pair<lli,lli> > > adj;
 
-bool visited(lli index, unordered_set<lli> visitedNodes)
+bool dfs(lli indexNode, lli &indexAnswer, vector<lli> &answer)
 {
-    if(visitedNodes.find(index) != visitedNodes.end())
-    {
-        return true;
-    }
-    return false;
-}
-
-
-bool dfs(lli indexNode, unordered_set<lli> &visitedNodes, lli &indexAnswer, vector< vector< lli> > adj, vector<lli> &answer)
-{
-    if(visited(indexNode, visitedNodes))
+    if(visited[indexNode])
     {
         return false;
     }
-    visitedNodes.insert(indexNode);
+    visited[indexNode] = true;
     lli sizeNeighbor = adj[indexNode].size();
-    for(lli i=0; i<sizeNeighbor; i++)
+    while(!adj[indexNode].empty())
     {
-        if( dfs(adj[indexNode][i], visitedNodes, indexAnswer, adj, answer) )
+        lli u = adj[indexNode].top().second;
+        adj[indexNode].pop();
+        if( dfs(u, indexAnswer, answer) )
         {
             indexAnswer--;
         }
@@ -34,14 +28,13 @@ bool dfs(lli indexNode, unordered_set<lli> &visitedNodes, lli &indexAnswer, vect
 }
 
 
-vector<lli> topologicalOrder(vector< vector<lli> > adj)
+vector<lli> topologicalOrder()
 {
-    unordered_set<lli> visitedNodes;  
     vector<lli> answer( adj.size() );
     lli index = adj.size() - 1;
     for(lli i=1; i<adj.size(); i++)
     {       
-        if(dfs(i, visitedNodes, index, adj, answer))
+        if(dfs(i, index, answer))
         {
             index--;
         }
@@ -53,20 +46,17 @@ vector<lli> topologicalOrder(vector< vector<lli> > adj)
 
 int main()
 {
-    lli n, k; cin>>n>>k;
-    vector< vector<lli> > adj(n);
-    for(lli i=0; i<k;  i++)
+    lli n, k; cin>>n;
+    adj.resize(n);
+
+    for(int i = 0; i<n; i++)
     {
-        lli x, y; cin>>x>>y;
-        adj[x].push_back(y);
+        lli minutes, dep; cin>>minutes>>dep;
+        forn(j,0,dep)
+        {
+            lli v; cin>>v;
+            
+        }
     }
-
-    vector<lli> ans = topologicalOrder(adj);
-
-    for(auto x: ans)
-    {
-        cout<<x<<" ";
-    }
-
     return 0;
 }
