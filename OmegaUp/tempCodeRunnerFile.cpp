@@ -1,87 +1,103 @@
 #include <bits/stdc++.h>
+
 #define lli long long int
 #define endl "\n"
+#define forn(i, in, fin) for(int i = in; i<fin; i++)
+#define all(v) v.begin(), v.end()
+#define fastIO(); ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0);
 
 using namespace std;
 
-struct Node{
-  lli value;
-  Node *l, *r; //l->0, r->1
-};
+const lli MOD = 1e9 + 7;
 
-void insert(Node *root, lli num)
+vector<lli> primes;
+vector<bool> isPrime;
+void primesSieve(int n)
 {
-	Node *tmp = root;
-	for(int i = 50; i>=0; i--)
-	{
-		bool val = num & (i<<i);
-		if(!val)
-		{
-			if(!tmp->l)
-				tmp->l = new Node();
-			
-			tmp = tmp->l;
-		}
-		else
-		{
-			if(!tmp->r)
-				tmp->r = new Node();
-
-			tmp = tmp->r;
+	isPrime.resize(n + 1, true);
+	isPrime[0] = isPrime[1] = false;
+	primes.push_back(2);
+	for(int i = 4; i <= n; i += 2) isPrime[i] = false;
+	for(lli i = 3; i <= n; i += 2)
+    {
+		if(isPrime[i])
+        {
+			primes.push_back(i);
+			if(i * i <= n)
+				for(int j = i * i; j <= n; j += 2 * i)
+					isPrime[j] = false;
 		}
 	}
-	tmp->value = num;
 }
 
-
-lli query(Node *root, lli n)
+lli binPow(lli a, lli b)
 {
-	Node *tmp = root;
-	for(int i = 50; i>=0; i--)
+	lli res = 1;
+	while(b)
 	{
-		bool val = n & (1<<i);
-		if(val) //val == 1
+		if(b&1) res = (res*a)%MOD;
+		b>>=1;
+		a = (a*a)%MOD;
+	}
+	return res;
+}
+
+lli inverse;
+
+
+lli pi_0(lli N){
+	int m = sqrt(N);
+	vector<lli> lo(m+1), hi(m+1), values;
+	auto at = [&](lli x) -> lli&{
+		if(x <= m) return lo[x];
+		else return hi[N / x];
+	};
+	for(int i = 1; i <= m; ++i){
+		values.push_back(i);
+		if(N / i != i) values.push_back(N / i);
+	}
+	sort(all(values), greater<lli>());
+	for(lli n : values){
+		lli a = n%MOD;
+		at(n) = ((((((a * (a+1))%MOD) * (2*a + 1))%MOD) * inverse)%MOD - 1);
+		if(at(n) < 0)
 		{
-			if(tmp->l)
-				tmp = tmp->l;
-			else
-				tmp = tmp->r;
-		}
-		else
-		{
-			if(tmp->r)
-				tmp = tmp->r;
-			else
-				tmp = tmp->l;
+			at(n) += MOD;
 		}
 	}
-	return n ^ (tmp->value);
+	
+	//for(lli p = 2; p <= m; ++p)
+	for(lli p: primes)
+	{
+		//if(at(p) == at(p - 1)) continue;
+		if(p>m) break;
+		lli mult = p*p;
+		lli pk = (mult)%MOD;
+		for(lli n : values){
+			if(n < mult) break;
+			lli aux = at(n/p) - at(p-1); if(aux < 0) aux+=MOD;
+			aux = (aux*pk)%MOD;
+			at(n) = (at(n) - aux);
+			//at(n) = (at(n) - ((pk*( ((at(n / p) - at(p - 1))%MOD) ))%MOD))%MOD;
+			if(at(n) < 0)
+			{
+				at(n) += MOD;
+			}
+		}
+	}
+	return at(N);
 }
 
 
 int main()
 {
-	ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0);
-	lli n; cin>>n;
-	vector<lli> nums(n);
-	for(auto &x: nums)
-	{
-		cin>>x;
-	}
-	Node *root = new Node();
-	lli res = 0;
-	for(auto x: nums)
-	{
-		insert(root, x);
-	}
-	for(auto x: nums)
-	{
-		res = max(res, query(root,x));
-	}
-
-	cout<<res<<endl;
+    //fastIO();
+    lli n;
+	primesSieve(316228);
+	inverse = binPow(6, MOD-2);
+    while(cin>>n)
+		cout<<pi_0(n)<<endl;
 
 
-  return 0;
+    return 0;
 }
-
