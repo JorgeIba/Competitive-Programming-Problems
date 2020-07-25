@@ -1,6 +1,5 @@
 #include <bits/stdc++.h>
 #define lli long long int
-#define ld long double
 #define endl "\n"
 #define forn(i, in, fin) for(int i = in; i<fin; i++)
 #define all(v) v.begin(), v.end()
@@ -10,8 +9,11 @@ using namespace std;
 
 int main()
 {
-    //fastIO();
+    //fastIO(); 
+    lli n; cin>>n;
+    vector< int > fr(10);
+    for(auto &x: fr) cin>>x;
     
-
+    
     return 0;
 }
