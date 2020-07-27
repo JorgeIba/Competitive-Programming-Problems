@@ -1,40 +1,59 @@
 #include <bits/stdc++.h>
 
 #define lli long long int
+#define ld long double
 #define endl "\n"
-#define debug(n) cout<<n<<endl
-#define debug2(a, b) cout<<a<<" "<<b<<endl;
 #define forn(i, in, fin) for(int i = in; i<fin; i++)
 #define all(v) v.begin(), v.end()
 #define fastIO(); ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0);
 
 using namespace std;
 
+const lli maxN = 19, maxMask = (1<<maxN);
+ld dp[maxMask];
+
+
 int main()
 {
-    //fastIO();
+    fastIO();
     lli n; cin>>n;
-    vector< vector<double> > mat(n, vector<double>(n));
-    forn(i, 0, n)
+    vector< vector<ld> > mat(n, vector<ld>(n));
+    for(int i = 0; i<n; i++)
     {
-        forn(j,0,n)
+        for(int j = 0; j<n; j++)
         {
             cin>>mat[i][j];
         }
     }
 
-    forn(i, 0, n)
+    cout<<fixed<<setprecision(10);
+    dp[ ((1<<n) - 1) ] = 1;
+    
+    for(int mask = ((1<<n) - 1) ; mask >=0; mask--)
     {
-        double prob = 1;
-        forn(j,0,n)
+        for(int i = 0; i<n; i++)
         {
-            if(i!=j)
+            for(int j = i+1; j<n; j++)
             {
-                prob = mat[i][j] * prob;
+                ld p = mat[i][j];
+                lli x = __builtin_popcountll(mask);
+                if( x < 2) continue;
+                ld xi = x;
+                ld pr = 2 / (xi * (xi-1));
+                if( (mask&(1<<i)) && (mask&(1<<j)) )
+                {
+                    dp[ mask & ( ~ (1<<i)  )  ] += (1-p)*dp[mask]*pr;
+                    dp[ mask & (  ~(1<<j)  )  ] += (p)*dp[mask]*pr;
+                }
             }
         }
-        cout<<prob<<" ";
     }
-
+    
+    for(int i = 0; i<n; i++)
+    {
+        lli mask = (1<<i);
+        cout<< dp[mask] << endl;
+    }
+    
     return 0;
 }

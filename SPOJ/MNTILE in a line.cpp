@@ -1,0 +1,2 @@
+#include<bits/stdc++.h>
+using l=long long;using namespace std;l w,h;vector<l>d;l f(l i,l j,l p){if(i==w){return !p?1:0;}if(j==h)return f(i+1,0,p);l&r=d[i*h*(1<<h)+j*(1<<h)+p];if(r!=-1)return r;r=f(i,j+1,p^(1<<j));if((p&(1<<j)))return r;if(j+1<h&&!(p&1<<(j+1)))r+=f(i,j+2,p);return r;}int main(){l t;cin>>t;while(t--){cin>>w>>h;d.clear();d.resize(w*h*(1<<h),-1);cout<<f(0,0,0)<<endl;}}

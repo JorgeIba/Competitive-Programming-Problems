@@ -8,9 +8,19 @@
 
 using namespace std;
 
+void solve()
+{
+    lli n; cin>>n;
+    lli mitad = n/2;
+    cout<< __gcd(mitad, 2*mitad)<<endl;
+}
+
+
 int main()
 {
     //fastIO();
-
+    lli t; cin>>t;
+    while(t--)
+        solve();
     return 0;
 }
