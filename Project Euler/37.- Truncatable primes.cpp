@@ -8,65 +8,64 @@
 
 using namespace std;
 
-vector< bool > isPrime;
-
-void sieve(lli n)
+bool isPrime(lli n)
 {
-    isPrime.resize(n+1, true);
-    isPrime[0] = isPrime[1] = false;
-    for(lli i = 4; i<=n; i+=2) isPrime[i] = false;
-
-    for(lli i = 3; i<=n; i+=2) 
+    if(n < 2) return false;
+    if(n == 2 || n == 3) return true;
+    if(n%2 == 0 || n%3 == 0) return false;
+    for(lli i = 2; i*i<=n; i++)
     {
-        if(isPrime[i])
+        if(n%i == 0)
         {
-            for(lli j = i*i; j <= n; j+= 2*i)
-            {
-                isPrime[j] = false;
-            }
+            return false;
         }
     }
+    return true;
 }
 
-const lli maxN = 1e8;
 
 bool isTruncatable(lli n)
 {
-    lli aux1 = n;
-    while(aux1)
+    if( (to_string(n)).length() == 1  ) return false;
+    while(n)
     {
-        if(!isPrime[aux1]) return false;   
-        aux1 /= 10;
+        lli log = log10(n);
+        lli lastDigit = n / pow(10, log);
+        if(!isPrime(n)) return false;
+        n -= lastDigit*pow(10, log);
     }
-    lli aux2 = n;
-    while(aux2)
-    {
-        lli log = log10(aux2);
-        lli lastDigit = aux2 / pow(10, log);
-        if(!isPrime[aux2]) return false;
-        aux2 -= lastDigit*pow(10, log);
-    }
-
-
     return true;
 }
 
 int main()
 {
     //fastIO();
-    sieve(maxN);
-    lli suma = 0, cont = 0;
-    for(int i = 10; i<=maxN; i++)
+    queue< lli > q;
+    vector< lli > digits = {1, 3, 7, 9};
+    q.push(2); q.push(3); q.push(5); q.push(7);
+
+    lli total = 0, cuantity = 0;
+    while(!q.empty())
     {
-        if(isTruncatable(i))
+        lli curr = q.front(); q.pop();
+        for(auto digit: digits)
         {
-            suma += i;
-            cont++;
-            if(cont == 11) break;
+            lli possible = 10*curr + digit;
+            if(isPrime(possible))
+            {
+                q.push(possible);
+            }
+        }
+        if(isTruncatable(curr))
+        {
+            cuantity++;
+            total+=curr;
+            cout << curr << endl;
         }
     }
-    cout << suma << endl;
-    cout << cont << endl;
+    cout << total << endl;
+    //cout << cuantity << endl;
+
 
     return 0;
 }

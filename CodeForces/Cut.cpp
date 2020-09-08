@@ -24,8 +24,7 @@ struct Edge
 };
 
 vector< vector<Edge*> > adjList;
-vector< lli > dis;
-vector< lli > pos;
+vector< lli > dis, pos;
 vector< bool > visitado;
 const lli INF = numeric_limits<int>::max();
 lli n, m;
@@ -34,8 +33,8 @@ void addEdge(lli u, lli v, lli index, lli capacity)
 {
     Edge* uv = new Edge(v, 0, capacity);
     Edge* vu = new Edge(u, 0, capacity);
-    //uv->res = vu;
-    //vu->res = uv;
+    uv->res = vu;
+    vu->res = uv;
     uv->idx = index;
     vu->idx = -index;
     adjList[u].push_back(uv);

@@ -1,104 +1,95 @@
 #include <bits/stdc++.h>
+ 
+#define endl '\n'
 #define lli long long int
-using namespace std;
-lli t=0;
+#define ld long double
+#define forn(i,n) for (int i = 0; i < n; i++)
+#define all(v) v.begin(), v.end()
+#define fastIO(); ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+#define SZ(s) int(s.size())
 
-vector<lli> numeros;
-lli CeilIndex( vector<lli> tailIndex, lli buscar, lli r)
+using namespace std;
+
+typedef vector<lli> VLL;
+typedef vector<int> VI;
+
+int CeilIndex(VLL &nums, VI &tail, lli buscar, int r)
 {
-	lli l=0;
-	lli res=0;
+	int l=0, res = 0;
 	while(l<=r)
 	{
-		lli posible = l + (r-l)/2;
-		if ( buscar <= numeros[ tailIndex[posible] ]  )
-		{
-			res = posible;
-			r = posible-1;
-		}
+		int mid = l + (r-l)/2;
+		if ( buscar <= nums[ tail[mid] ]  )
+			res = mid, r = mid-1;
 		else
-		{
-			l = posible + 1;
-		}	
+			l = mid + 1;
 	}
-	
 	return res;
 }
 
-void LIS(lli n)
+VLL LIS(VLL &nums)
 {
-	vector<lli> tailIndex(n,0);
-	vector<lli> prevIndex(n,-1);
+	int n = SZ(nums);
+	VI tail(n,0);
+	VI prev(n,-1);
 	
-	lli ultimo=0;
+	int last=0;
 	
 	for (int i=1; i<n; i++)
 	{
-		if (numeros[i] <= numeros[tailIndex[0]])
+		if (nums[i] <= nums[tail[0]])   
+			tail[0] = i;
+		else if (nums[i] >= nums[tail[last]])
 		{
-			tailIndex[0] = i;
-		}
-		else if (numeros[i] >= numeros[tailIndex[ultimo]])
-		{
-			prevIndex[i] = tailIndex[ultimo];
-			ultimo++;
-			tailIndex[ultimo] = i;
-			
+			prev[i] = tail[last];
+			tail[++last] = i;
 		}
 		else
 		{
-			lli index = CeilIndex( tailIndex, numeros[i], ultimo);
-			prevIndex[i] = tailIndex[index-1];
-			tailIndex[index] = i;
+			int index = CeilIndex(nums, tail, nums[i], last);
+			prev[i] = tail[index-1];
+			tail[index] = i;
 		}
 	}
-	
-	stack<lli> pila;
-	lli x=tailIndex[ultimo];
-	cout<<"Max hits: "<<(lli)(ultimo+1)<<endl;
-	while(x!=-1)
-	{
-		pila.push(numeros[x]);
-		x = prevIndex[x];
-	}	
-	while(!pila.empty())
-	{
-		cout<<pila.top()<<endl;
-		pila.pop();
-	}	
+
+	VLL ans;
+
+	for(int i = tail[last]; i!=-1; i = prev[i])
+		ans.push_back(nums[i]);
+
+	reverse(all(ans));
+	return ans;
 }
 
-
-
-void funcion1(int indice)
+void funcion1()
 {
-	numeros.resize(0);
+	VLL nums;
 	string TAux;
 	while(getline(cin,TAux)and(!TAux.empty()))
 	{
 			lli x= atoi(TAux.c_str());
-			numeros.push_back(x);
+			nums.push_back(x);
 	}
-	LIS(numeros.size());
-	if (indice!=t-1)
-	{
-		cout<<endl;
-	}
+	VLL ans = LIS(nums);
+	cout <<"Max hits: " << SZ(ans) << endl;
+	for(auto x: ans) cout << x << endl;
 }
 
 
 int main()
 {
-	ios_base::sync_with_stdio(false);
-	cin.tie(0);
-	cout.tie(0);
-	cin>>t;
+	fastIO();
+	int t; cin>>t;
 	string aux;
 	getline(cin, aux);
 	getline(cin, aux);
-	for (lli i=0; i<t; i++)
+	for(int i=0; i<t; i++)
 	{
-		funcion1(i);
+		funcion1();
+		if(i != t-1)
+		{
+			cout << endl;
+		}
 	}
 	return 0;
 }

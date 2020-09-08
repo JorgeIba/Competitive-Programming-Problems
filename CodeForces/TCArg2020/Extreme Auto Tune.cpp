@@ -7,70 +7,68 @@
 #define fastIO(); ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0);
 
 using namespace std;
+const lli MOD = 998244353, maxK = 25005;
 
-vector< lli > coeffs, fact, inverse;
-const lli MOD = 998244353;
+vector< lli > B(maxK), fact(maxK), ifact(maxK);
 
-lli binPow(lli a, lli b)
+lli binPow(lli a, lli b, lli mod)
 {
     lli res = 1;
+    a = a%mod;
     while(b)
     {
-        if(b&1) res = (res*a)%MOD;
-        b >>= 1;
-        a = (a*a)%MOD;
+        if(b&1) res = (res * a)%mod;
+        b>>=1;
+        a = (a*a)%mod;
     }
     return res;
 }
 
-void prec(lli k)
+lli nChoosek(lli n, lli k)
 {
-    coeffs.resize(25010);
-    fact.resize(25010);
-    inverse.resize(25010);
-
-    fact[0] = 1;
-    inverse[0] = 1;
-    for(int i = 1; i<25000; i++)
-    {
-        fact[i] = (fact[i-1] * i) % MOD;
-        inverse[i] = binPow( fact[i], MOD-2 );
-    }
-    for(int i = 0; i<=k; i++)
-    {
-        coeffs[i] = ((fact[k] * inverse[k-i])%MOD * inverse[i])%MOD;
-    }
+    return (((fact[n] * ifact[n-k])%MOD )* ifact[k])%MOD;
 }
 
-
-lli S(lli n, lli k)
+void prec()
 {
-    if(k == 0) return n;
+    B[0] = fact[0] = ifact[0] = 1; 
 
-    lli aux = (binPow(2, k+1) * n)%MOD;
-    lli suma = 1;
-    for(int i = 0; i<=k-1; i++)
+    for(int i = 1; i<maxK; i++)
     {
-        //lli inverseCoeff = binPow(coeffs[i], MOD-2);
-        suma = (suma + coeffs[i]*S(n, i))%MOD;
+        fact[i] = (i*fact[i-1])%MOD;
+        ifact[i] = binPow(fact[i], MOD-2, MOD);
     }
-    lli total = (aux - suma)%MOD;
-    if(total < 0) total += MOD;
-    lli inverseC = binPow(coeffs[k], MOD - 2);
-    return total;
+    for(int i = 1; i < maxK; i++)
+    {
+        lli aux = 0;
+        for(int k = 0; k<=i-1; k++)
+        {
+            lli inv = binPow(i-k+1, MOD-2, MOD);
+            aux = (aux + (((nChoosek(i, k) * B[k])%MOD)*inv)%MOD)%MOD;
+        }
+        B[i] = (1 - aux + MOD)%MOD;
+        //if(B[i] < 0) B[i] += MOD;
+    }
 }
-
 
 
 int main()
 {
     //fastIO();
-    lli n, k; cin>>n>>k;
-    prec(k);
-    
-
-    cout << S(n, k)  << endl;
-    
-
+    prec();
+    lli m, p; cin>>m>>p;
+    while(m--)
+    {
+        lli n; cin>>n;
+        lli suma = 0;
+        n = n % MOD;
+        for(int k = 0; k<=p; k++)
+        {
+            suma = (suma + ((nChoosek(p+1, k) * B[k])%MOD) * binPow(n, p + 1 - k, MOD))%MOD;
+        }
+        lli res = (suma * binPow(p+1, MOD-2, MOD))%MOD;
+        assert(res >= 0 && res < MOD);
+        cout << res << endl;
+    }
     return 0;
 }
