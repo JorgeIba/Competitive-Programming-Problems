@@ -10,6 +10,9 @@
 
 using namespace std;
 
+typedef vector<lli> VLL;
+typedef vector<int> VI;
+
 typedef complex<ld> cd;
 const ld PI = acos(-1);
 
@@ -41,9 +44,9 @@ void fft(vector<cd> &A, bool inv)
         {
             for(int j = 0; j<k>>1; j++)
             {
-                cd u = A[i+j], v = A[i+j+k/2] * w[j];
+                cd u = A[i+j], v = A[i+j+(k>>1)] * w[j];
                 A[i+j] = u + v;
-                A[i+j+k/2] = u - v;
+                A[i+j+(k>>1)] = u - v;
             }
         }
     }
@@ -51,41 +54,64 @@ void fft(vector<cd> &A, bool inv)
         for(auto &x: A) x/=n;
 }
 
-
-vector<lli> multiply(vector<lli> &A, vector<lli> &B)
+string normalize(VLL &v)
 {
-    int n = SZ(A) + SZ(B) - 1, sz = nearestPowerTwo(n);
+    string ss;
+    int carry =0;
+    for(int i = SZ(v)-1; i>=0; i--)
+    {
+        v[i] += carry;
+        carry = v[i] / 10;
+        v[i] %= 10;
+    }
+
+    if(carry>0)
+        ss+=(carry+'0');
+    for(auto x: v) ss+=(x+'0');
+    return ss;
+}
+
+string multiply_numbers(string &s1, string &s2)
+{
+    int degree = s1.length() + s2.length() - 1;
+    int sz = nearestPowerTwo(degree);   
+    if(s1 == "0" || s2 == "0") return "0";
+
     vector<cd> FA(sz), FB(sz);
-    for(int i = 0; i<SZ(A); i++) FA[i] = A[i];
-    for(int i = 0; i<SZ(B); i++) FB[i] = B[i];
+    for(int i = 0; i<(int)s1.length(); i++) FA[i] = (s1[i] - '0');
+    for(int i = 0; i<(int)s2.length(); i++) FB[i] = (s2[i] - '0');
+
     fft(FA, false);
     fft(FB, false);
-    vector<cd> C(sz);
-    for(int i = 0; i<sz; i++) C[i] = FA[i]*FB[i];
-    fft(C, true);
-    vector<lli> ans(n);
-    for(int i = 0; i<n; i++) ans[i] = (lli)(round(C[i].real()));
-    return ans;
+
+    for(int i = 0; i<sz; i++)
+    {
+        FA[i]*=FB[i];
+    }
+    fft(FA, true);
+    VLL ans(degree);
+    for(int i = 0; i<degree; i++)
+    {
+        ans[i] = (lli)(round(FA[i].real()));
+    }
+
+    return normalize(ans);
 }
 
 
-
-void solve () {
-    lli n; cin>>n;
-    vector< lli > A(n+1), B(n+1);
-
-    for(auto &x: A) cin>>x;
-    for(auto &x: B) cin>>x;
-	
-    auto C = multiply(A, B);
-
-    for(auto x: C) cout << x << " ";
-    cout << endl;
-}
-
-int main()
+void solve()
 {
-    fastIO();
-    int t; cin>>t;
+    string num1, num2; cin>>num1>>num2;
+    auto c = multiply_numbers(num1, num2);
+    cout << c << endl;
+}
+
+
+int main () {
+	fastIO();
+    lli t; cin>>t;
     while(t--) solve();
+    
+
+	return 0;
 }

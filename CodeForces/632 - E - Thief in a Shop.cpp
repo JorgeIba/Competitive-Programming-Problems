@@ -30,20 +30,16 @@ void fft(vector<cd> &A, bool inv)
     
     vector< cd > w(n>>1);
 
-    for(int k = 2; k<=n; k<<=1)
-    {
+    for(int k = 2; k<=n; k<<=1){
         cd w1 = polar((ld)1, (inv?-1:1) * 2 * PI / k) ;
         w[0] = 1;
         for(int j = 1; j<k>>1; j++)
             w[j] = w[j-1]*w1;
-
-        for(int i = 0; i<n; i+=k)
-        {
-            for(int j = 0; j<k>>1; j++)
-            {
-                cd u = A[i+j], v = A[i+j+k/2] * w[j];
+        for(int i = 0; i<n; i+=k){
+            for(int j = 0; j<k>>1; j++){
+                cd u = A[i+j], v = A[i+j+(k>>1)] * w[j];
                 A[i+j] = u + v;
-                A[i+j+k/2] = u - v;
+                A[i+j+(k>>1)] = u - v;
             }
         }
     }
@@ -51,41 +47,54 @@ void fft(vector<cd> &A, bool inv)
         for(auto &x: A) x/=n;
 }
 
-
-vector<lli> multiply(vector<lli> &A, vector<lli> &B)
+template<typename T>
+vector<T> multiply(vector<T> &A, vector<T> &B)
 {
     int n = SZ(A) + SZ(B) - 1, sz = nearestPowerTwo(n);
     vector<cd> FA(sz), FB(sz);
     for(int i = 0; i<SZ(A); i++) FA[i] = A[i];
     for(int i = 0; i<SZ(B); i++) FB[i] = B[i];
-    fft(FA, false);
-    fft(FB, false);
-    vector<cd> C(sz);
-    for(int i = 0; i<sz; i++) C[i] = FA[i]*FB[i];
-    fft(C, true);
-    vector<lli> ans(n);
-    for(int i = 0; i<n; i++) ans[i] = (lli)(round(C[i].real()));
+    fft(FA, false);  fft(FB, false);
+    for(int i = 0; i<sz; i++) FA[i]*=FB[i];
+    fft(FA, true);
+    vector<T> ans(n);
+    for(int i = 0; i<n; i++) ans[i] = (T)(round(FA[i].real()));
+    for(int i = 0; i<n; i++) ans[i] = (ans[i]?1:0);
     return ans;
 }
 
-
-
-void solve () {
-    lli n; cin>>n;
-    vector< lli > A(n+1), B(n+1);
-
-    for(auto &x: A) cin>>x;
-    for(auto &x: B) cin>>x;
-	
-    auto C = multiply(A, B);
-
-    for(auto x: C) cout << x << " ";
-    cout << endl;
+vector<lli> binPow(vector<lli> a, int b){
+    vector<lli> res = {1};
+    while(b)
+    {
+        if(b&1) res = multiply(res, a);
+        b>>=1;
+        a = multiply(a, a);
+    }
+    return res;
 }
 
-int main()
-{
-    fastIO();
-    int t; cin>>t;
-    while(t--) solve();
+
+int main () {
+	fastIO();
+    int n, k; cin>>n>>k;
+    vector<lli> poly(1001);
+
+    forn(i,n){
+        lli x; cin>>x;
+        poly[x] = 1;
+    }
+
+    auto C = binPow(poly, k);
+
+    for(int i = 0; i<SZ(C); i++)
+    {
+        if(C[i] != 0)
+        {
+            cout << i << " ";
+        }
+    }
+    
+
+	return 0;
 }
