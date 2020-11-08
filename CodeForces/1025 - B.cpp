@@ -2,88 +2,36 @@
 #define lli long long unsigned int
 using namespace std;
 
-
-set<lli> primos;
-
-void descomponer(lli n)
-{
-	if(n%2==0)
-	{
-		primos.insert(2);
-		while(n%2==0)
-		{
-			n/=2;
-		}
-	}
-
-	for(lli i = 3; i*i<=n; i+=2)
-	{
-		if(n%i==0)
-		{
-			primos.insert(i);
-			while(n%i==0)
-			{
-				n/=i;
-			}
-		}
-	}
-
-	if (n>1)
-	{
-		primos.insert(n);
+vector<vector<int>> primeFactors;
+void primeFactorsSieve(lli n){
+	primeFactors.resize(n + 1);
+	for(int i = 0; i < primes.size(); ++i){
+		int p = primes[i];
+		for(int j = p; j <= n; j += p)
+			primeFactors[j].push_back(p);
 	}
 }
 
 
-
- 
 int main()
 {
-	ios_base::sync_with_stdio(false);
-	cin.tie(0);
-	cout.tie(0);
-	lli n; cin>>n;
-	vector< pair<lli, lli> > parejas(n);
-	for(int i=0; i<n; i++)	
+	int n;
+	vector<lli> numeros;
+	criba();
+	for (int i=0; i<n; i++)
 	{
-		cin>>parejas[i].first>>parejas[i].second;
-	}
-
-	descomponer(parejas[0].first);
-	descomponer(parejas[0].second);
-
-	for(int i=1; i<n; i++)
-	{
-		lli uno = parejas[i].first;
-		lli dos = parejas[i].second;
-		set<lli> aux = primos;
-		for(auto x: aux)
-		{
-			if((uno % x == 0)or(dos % x == 0))
-			{
-				continue;
-			}
-			else
-			{
-				//cout<<x<<endl;
-				primos.erase(x);
-			}
-		}
-	}
-
-	if(primos.size() > 0)
-	{
-		auto x = primos.begin();
-		cout<<*x<<endl;
-	}
-	else
-	{
-		cout<<-1<<endl;
+		lli aux1,aux2;
+		cin>>aux1>>aux2;
+		numeros.push_back(aux1*aux2);
 	}
 	
-
+	vector<vector<int>> answer = primeFactorsSieve(aux1*aux2);
+	for(auto x: answer)
+	{
+		cout<<x<<" ";
+	}
 	
 	
-
+	
 	return 0;
 }

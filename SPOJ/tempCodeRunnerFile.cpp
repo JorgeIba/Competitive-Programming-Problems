@@ -1,1 +1,2 @@
-;return r;}int main(){l t;cin>>t;while(t--){cin>>w>>h;d.clear();d.resize(w*h*(1<<h),-1);cout<<f(0,0,0)<<endl;}}
+
+                ans++;
