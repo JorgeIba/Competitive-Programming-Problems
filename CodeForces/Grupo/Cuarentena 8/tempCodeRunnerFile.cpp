@@ -1,136 +1,142 @@
 #include <bits/stdc++.h>
-
+ 
+#define endl '\n'
 #define lli long long int
-#define endl "\n"
-#define debug(n) cout<<n<<endl
-#define debug2(a, b) cout<<a<<" "<<b<<endl;
-#define forn(i, in, fin) for(int i = in; i<fin; i++)
+#define ld long double
+#define forn(i,n) for (int i = 0; i < n; i++)
 #define all(v) v.begin(), v.end()
-#define fastIO(); ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0);
+#define fastIO(); ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+#define SZ(s) int(s.size())
 
 using namespace std;
+	
+typedef vector<lli> VLL;
+typedef vector<int> VI;
 
-struct Edge
+lli g(lli p, lli a)
 {
-    lli to, flow, capacity;
-    Edge* res;
-    Edge(lli to, lli flow, lli capacity): to(to), flow(flow), capacity(capacity) {}
+    return -(a==1);
+}
 
-    void addFlow(lli flow)
-    {
-        this->flow += flow;
-        this->res->flow -= flow;
+//35
+vector<lli> sieveMulFunction(lli n)
+{
+    vector<lli> primes, lp(n+1), f(n+1), cnt(n+1), pot(n+1);
+    f[1] = 1;
+    for(int i = 2; i<=n; i++){
+        if(!lp[i]){
+            lp[i] = pot[i] = i; cnt[i] = 1;
+            f[i] = g(i,1);
+            primes.push_back(i);
+        }
+        for(auto p: primes){
+            lli d = i*p;
+            if(d>n) break;
+            lp[d] = p;
+            if(p == lp[i]){ // lowestPrime[i] == p
+                f[d] = f[ i/pot[i] ] * g(p,cnt[i]+1);
+                pot[d] = pot[i]*p;
+                cnt[d] = cnt[i]+1;
+                break;
+            }
+            else{ //Coprimes
+                f[d] = f[i]*f[p];
+                pot[d] = p;
+                cnt[d] = 1;
+            }
+        }
     }
+    return f;
+}
+
+struct Prefix_F{
+
+	typedef lli (*func) (lli);
+
+	func p_f;
+	lli limit, inv;
+	unordered_map <lli, lli> dp;
+
+	Prefix_F(func p_f, lli limit) : p_f (p_f), limit(limit) {}
+
+	lli go(lli n) {
+		if (n <= limit) return p_f (n);
+		if (dp.count(n)) return dp[n];
+		lli ans = 0;
+		for (lli i = 2, r; i <= n; i = r + 1) {
+			r = n / (n / i);
+			ans += (r - i + 1)* go(n / i);
+		}
+        //assert(ans >= 0 && ans < MOD);
+		ans = 1 - ans; ans = ans / inv;
+
+		return dp[n] = ans;
+	}
+
+	lli get(lli n) {
+		if (n <= 0) return 0;
+		inv = 1;
+		return go(n); 
+	}
 };
 
-vector< vector< Edge* > > adjList;
-vector<lli> dis;
-vector<lli> pos;
-const lli INF = numeric_limits<lli>::max();
-lli n, m;
 
-void addEdge1(lli u, lli v, lli capacity)
+const lli maxN = 1e10+10;
+const lli limit = pow(maxN, 2.0/3.0);
+auto miu = sieveMulFunction(limit);
+VLL p_miu_2(limit), p_miu(limit);
+
+lli get_p_miu(lli n)
 {
-    Edge* uv = new Edge(v, 0, capacity);
-    Edge* vu = new Edge(u, 0, capacity);
-    uv->res = vu;
-    vu->res = uv;
-    adjList[u].push_back(uv);
-    adjList[v].push_back(vu);
+    return p_miu[n];
 }
 
-void addEdge2(lli u, lli v, lli capacity)
-{
-    Edge* uv = new Edge(v, 0, capacity);
-    Edge* vu = new Edge(u, 0, 0);
-    uv->res = vu;
-    vu->res = uv;
-    adjList[u].push_back(uv);
-    adjList[v].push_back(vu);
-}
+Prefix_F F(get_p_miu, limit);
 
-lli blockingFlow(lli u, lli t, lli minimo)
+lli get_p_miu_2(lli n)
 {
-    if(u==t) return minimo;
-    for(lli &i= pos[u]; i<adjList[u].size(); i++)
+    if(n < limit) return p_miu_2[n];
+    lli m = sqrt(n);
+    lli ans = 0;
+    for(lli i = 1; i<=m; i++)
     {
-        Edge* v = adjList[u][i];
-        if(v->capacity > v->flow && dis[u] + 1 == dis[v->to])
+        ans += miu[i] * (n/(i*i));
+    }
+    return ans;
+}
+
+
+lli counting(lli n)
+{
+    lli V = get_p_miu_2(n);
+    lli U = F.get(n);
+    return (V + U) / 2 - 1;
+}
+
+int main () {
+	//fastIO();
+    for(int i = 1; i<limit; i++)
+    {
+        p_miu_2[i] = p_miu_2[i-1] + miu[i]*miu[i];
+        p_miu[i] = p_miu[i-1] + miu[i];
+    } 
+
+    lli k; cin>>k;
+
+    lli l = 0, r = 1e11, ans = -1;
+    while(l<=r)
+    {
+        lli mid = l + (r-l)/2;
+        if( counting(mid) >= k)
         {
-            lli f = blockingFlow(v->to, t, min(minimo, v->capacity - v->flow));
-            if(f>0)
-            {
-                v->addFlow(f);
-                return f;
-            }
+            ans = mid;
+            r = mid-1;
         }
-    }
-    return 0;
-}
+        else l = mid+1;
+    } 
+    
+    cout << ans << endl;
 
-
-lli dinic(lli s, lli t)
-{
-    lli maxFlow = 0;
-    fill(all(dis), -1);
-    dis[t] = 0;
-    while(dis[t]!=-1)
-    {
-        fill(all(dis), -1);
-        queue<lli> Q;
-        Q.push(s);
-        dis[s] = 0;
-        while(!Q.empty())
-        {
-            lli u = Q.front(); Q.pop();
-            for(Edge* v: adjList[u])
-            {
-                if(dis[v->to] == -1 && v->capacity > v->flow)
-                {
-                    dis[v->to] = dis[u] + 1;
-                    Q.push(v->to);
-                }
-            }
-        }
-        if(dis[t]!=-1)
-        {
-            lli f = 0;
-            fill(all(pos), 0);
-            while(f = blockingFlow(s, t, INF))
-            {
-                maxFlow += f;
-            }
-        }
-    }
-    return maxFlow;   
-}
-
-
-
-
-
-int main() //par->entrada, impar->salida
-{
-    fastIO();
-    cin>>n>>m;
-    adjList.resize(2*n + 100);
-    dis.resize(2*n + 100);
-    pos.resize(2*n + 100);
-    for(int i = 0; i<n-1; i++)
-    {
-        lli c; cin>>c;
-        addEdge2(2*i, 2*i+1, c);
-    }
-    for(int i = 0; i<m; i++)
-    {
-        lli u, v, c; cin>>u>>v>>c;
-        u--, v--;
-        addEdge1(2*u + 1, 2*v ,c);
-    }
-
-
-    cout<<dinic(0, 2*(n-1))<<endl;
-
-
-    return 0;
+    
+	return 0;
 }

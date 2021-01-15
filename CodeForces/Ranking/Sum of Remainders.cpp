@@ -1,41 +1,74 @@
 #include <bits/stdc++.h>
+ 
+#define endl '\n'
 #define lli long long int
+#define ld long double
+#define forn(i,n) for (int i = 0; i < n; i++)
+#define all(v) v.begin(), v.end()
+#define fastIO(); ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+#define SZ(s) int(s.size())
+
 using namespace std;
 
-int main()
+typedef vector<lli> VLL;
+typedef vector<int> VI;
+
+const lli MOD = 1e9+7;
+const lli inv2 = 500000004;
+
+lli add(lli n, lli m)
 {
-	lli n,m;
-	cin>>n>>m;
-	lli suma=0;
-	lli t=n*m;
-	for (lli i=1; i<=m; i++)
+	n = n%MOD, m = m%MOD;
+	return n+m<MOD? n+m: n+m-MOD;
+}
+
+lli sub(lli n, lli m)
+{
+	n = n%MOD, m = m%MOD;
+	return n-m<0? n-m+MOD: n-m;
+}
+
+lli mult(lli n, lli m)
+{
+	n = n%MOD, m = m%MOD;
+	return (n*m)%MOD;
+}
+
+
+lli gauss(lli n)
+{
+	return mult(n, mult(n+1, inv2));
+}
+
+
+int main () {
+	//fastIO();
+	lli n, m; cin>>n>>m;
+	lli suma = mult(n, m);
+
+	m = min(n, m);
+
+	lli quitar = 0;
+
+	lli minValue = m;
+
+	for(lli v = 1; v*v<=n; v++)
 	{
-		if(i>n)
-		{
-			break;
-		}
-		lli aux = n/i;
-		suma+=aux*i;
-		cout<<aux*i<<" <- i[n/i] \n";
-		//cout<<suma<<" <- suma\n";
+		lli l = n/(v+1), r = n/v;
+		r = min(r, m);
+		if(l >= r) continue;
+		minValue = min(l, minValue);
+		lli aux = sub( gauss(r), gauss(l) );
+		quitar = add(quitar, mult(aux, v));
 	}
-	cout<<t-suma<<endl;
-	 /*
-	 cout<<"-----------------------\n";
-	 suma=0;
-	for(lli j=1; j<=n; j++)
+
+	for(lli i = 1; i <= minValue; i++)
 	{
-		cout<<"Para: "<<j<<" su suma:\n";
-		for (lli i=1; i<=j; i++)
-		{
-			//cout<<j%i<<" ";
-			suma+=j%i;
-		}
-		cout<<suma<<endl;
-		suma=0;
+		quitar = add(quitar, mult(n/i, i));
 	}
-	*/
-	
-	
+	//cout << quitar << endl;
+	cout << sub(suma, quitar) << endl;
+
+
 	return 0;
 }

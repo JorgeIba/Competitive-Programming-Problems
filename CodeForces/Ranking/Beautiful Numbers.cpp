@@ -1,91 +1,67 @@
 #include <bits/stdc++.h>
+ 
+#define endl '\n'
 #define lli long long int
-#define MOD 1000000007
+#define ld long double
+#define forn(i,n) for (int i = 0; i < n; i++)
+#define all(v) v.begin(), v.end()
+#define fastIO(); ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+#define SZ(s) int(s.size())
 
 using namespace std;
 
-lli factorial[1000001];
-lli inverso[1000001];
-lli a,b;
+typedef vector<lli> VLL;
+typedef vector<int> VI;
 
-lli BinPower(lli a, lli b) //a^b
+//13
+const lli maxN = 1e6+5;
+const lli MOD = 1e9+7;
+vector<lli> fact(maxN+1, 1), inv(maxN+1, 1), invFact(maxN+1,1);
+void prec()
 {
-	lli res=1;
-	a=a%MOD;
-	while(b)
-	{
-		if(b&1) 
-		{
-			res = res*a%MOD;
-		}
-		b>>=1;
-		a=a*a%MOD;
-	}
-	return res;
-}
-
-
-
-void inicializar()
-{
-	factorial[0]=1;
-	for(int i=1; i<1000000; i++)
-	{
-		factorial[i] = i*factorial[i-1]%MOD;
-		inverso[i] = BinPower(factorial[i], MOD-2)%MOD;
+    for(lli i = 2; i < maxN; ++i)
+    {
+        fact[i] = i*fact[i-1] %MOD;
+        inv[i] = MOD - (MOD/i)*inv[MOD%i]%MOD;
+        invFact[i] = (lli)inv[i]*invFact[i-1]%MOD;
 	}
 }
 
-lli Permutacion(lli n, lli x)
+lli nCr(lli n, lli r)
 {
-	return (factorial[n]/(inverso[n-x]*inverso[x]));
+	return (fact[n]*invFact[n-r] % MOD) * invFact[r] % MOD;
 }
 
-bool checar(lli n)
+bool isExcellent(lli n, lli a, lli b)
 {
-	if(n==0)
+	string s = to_string(n);
+	assert((int)s.length() > 0);
+	for(auto c: s)
 	{
-		return false;
-	}
-	while(n>0)
-	{
-		lli res = n%10;
-		n/=10;
-		if((res!=a)and(res!=b))
-		{
-			return false;
-		}
+		int digit = c - '0';
+		if( digit != a && digit != b ) return false;
 	}
 	return true;
 }
 
-int main()
-{
-	inicializar();
-	lli n;
-	cin>>a>>b>>n;
-	lli aux = min(a,b);
-	a = max(a,b);
-	b = aux; // a -> maximo, b -> minimo
-	lli total = b*n;
-	lli diff = a-b;
-	lli suma=0;
-	
-	for(int i=0; i<=n; i++)
-	{
-		lli sumDigits = total%9;
-		cout<<total<<" "<<sumDigits<<" "<<checar(sumDigits)<<endl;
-		if( checar(sumDigits)  )
-		{
-			//cout<<"I'm here\n";
-			suma+= Permutacion(n,i);
-		}
 
-		total = total + diff;
+int main () {
+	//fastIO();
+	prec();
+	lli a, b, n; cin>>a>>b>>n;
+	lli total = b*n;
+	lli ans = 0;
+	for(lli i = 0; i<=n; i++)
+	{
+		if(isExcellent(total, a, b))
+		{
+			//cout << total << endl;
+			ans = (ans + nCr(n, i)) % MOD;
+		} 
+		
+		total +=(a - b);
 	}
-	
-	cout<<suma%MOD<<endl;
-	
-	
+	cout << ans << endl;
+    
 	return 0;
 }

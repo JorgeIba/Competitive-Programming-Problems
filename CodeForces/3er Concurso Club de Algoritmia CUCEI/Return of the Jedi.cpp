@@ -27,7 +27,7 @@ ld INF = 1e18;
 const ld eps = 0.00001;
 
 void solve()
-{ww
+{
     cin>>n;
     ld k; cin>>k;
     intensity.clear(); intensity.resize(n);

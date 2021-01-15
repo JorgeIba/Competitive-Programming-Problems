@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 
-#define lli __int128
-#define ll long long int
+#define i128 __int128
+#define lli long long int
 #define ld long double
 #define endl "\n"
 #define forn(i, in, fin) for(int i = in; i<fin; i++)
@@ -11,9 +11,9 @@
 
 using namespace std;
 
-lli powerMod(lli a, lli b, lli mod)
+i128 powerMod(i128 a, i128 b, i128 mod)
 {
-    lli res = 1;
+    i128 res = 1;
     a = (a)%mod;
     while(b)
     {
@@ -24,14 +24,14 @@ lli powerMod(lli a, lli b, lli mod)
     return res;
 }
 
-bool isPrimeMillerRabin(lli n){
+bool isPrimeMillerRabin(i128 n){
 	if(n < 2) return false;
 	if(!(n & 1)) return n == 2;
-	lli d = n - 1, s = 0;
+	i128 d = n - 1, s = 0;
 	for(; !(d & 1); d >>= 1, ++s);
 	for(int a : {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37}){
 		if(n == a) return true;
-		lli m = powerMod(a, d, n);
+		i128 m = powerMod(a, d, n);
 		if(m == 1 || m == n - 1) continue;
 		int k = 0;
 		for(; k < s; ++k){
@@ -43,14 +43,14 @@ bool isPrimeMillerRabin(lli n){
 	return true;
 }
 
-ll gcd(ll a, ll b)
+lli gcd(lli a, lli b)
 {
     return __gcd(a, b);
 }
 
-lli mul(lli a, lli b, lli mod)
+i128 mul(i128 a, i128 b, i128 mod)
 {
-    lli res = 0;
+    i128 res = 0;
     a = (a)%mod;
     while(b)
     {
@@ -61,23 +61,23 @@ lli mul(lli a, lli b, lli mod)
     return res;
 }
 
-lli getFactor(lli n){
-	lli a = rand()%(n-1) + 1 , b = rand()%(n-1) + 1;
-	lli x = 2, y = 2, d = 1;
+i128 getFactor(i128 n){
+	i128 a = rand()%(n-1) + 1 , b = rand()%(n-1) + 1;
+	i128 x = 2, y = 2, d = 1;
 	while(d == 1){
         x = x*(x+b)%n + a;
         y = y*(y+b)%n + a;
         y = y*(y+b)%n + a;
-		d = gcd(abs ((ll)x - (ll)y), n);
+		d = gcd(abs ((lli)x - (lli)y), n);
 	}
 	return d;
 }
 
-vector< ll > fact;
-void factorizePollardRho(lli n, bool clean = true){
+vector< lli > fact;
+void factorizePollardRho(i128 n, bool clean = true){
 	if(clean) fact.clear();
 	while(n > 1 && !isPrimeMillerRabin(n)){
-		lli f = n;
+		i128 f = n;
 		for(; f == n; f = getFactor(n));
 		n /= f;
 		factorizePollardRho(f, false);
@@ -87,12 +87,12 @@ void factorizePollardRho(lli n, bool clean = true){
 
 void solve()
 {
-    ll n; cin>>n;
+    lli n; cin>>n;
     factorizePollardRho(n);
     string s;
-    lli howMuch = SZ(fact);
+    i128 howMuch = SZ(fact);
     sort(all(fact));
-    for(ll i = 0; i<howMuch; i++)
+    for(lli i = 0; i<howMuch; i++)
     {
         cout << fact[i];
         if(i != (howMuch - 1))
@@ -105,7 +105,7 @@ void solve()
 
 int main () {
 	fastIO();
-    ll t; cin>>t;
+    lli t; cin>>t;
     while(t--) solve();
 	return 0;
 }
