@@ -1,0 +1,7 @@
+https://projecteuler.net/problem=15
+https://www.hackerrank.com/challenges/k-candy-store/problem
+https://codeforces.com/contest/131/problem/C       --- medio-facil
+https://codeforces.com/gym/101972/problem/J        --- medio
+https://codeforces.com/problemset/problem/893/E    --- dificil
+
+https://brilliantscholars.wordpress.com/2013/03/05/binomial-coefficients-binomial-theorem/

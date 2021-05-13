@@ -1,94 +1,47 @@
 #include <bits/stdc++.h>
+ 
+#define endl '\n'
+#define lli long long int
+#define ld long double
+#define forn(i,n) for (int i = 0; i < n; i++)
+#define all(v) v.begin(), v.end()
+#define fastIO(); ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+#define SZ(s) int(s.size())
+
 using namespace std;
 
+typedef vector<lli> VLL;
+typedef vector<int> VI;
 
-stack<int> pila1;
-stack<int> pila2;
+const int maxN = 1e6 + 10;
 
-void funcion1(int n)
-{
-	vector<int> numeros(n);
-	for (int i=0; i<n; i++)
+int main () {
+	fastIO();
+	lli n; cin>>n;
+	vector<lli> plants(n), howMany(maxN);
+	for(auto &plant: plants) cin>>plant;
+
+	stack<lli> increase;
+	lli maximum_time = 0;
+	for(int i = n-1; i>=0; i--)
 	{
-		cin>>numeros[i];
+		lli cont = 0;
+		while(!increase.empty() && plants[i] > increase.top())
+		{
+			if(cont < howMany[increase.top()])
+			{
+				cont = howMany[increase.top()];
+			}
+			else cont++;
+			increase.pop();
+		}
+		//empty or top bigger
+		howMany[plants[i]] = cont;
+		increase.push(plants[i]);
+		maximum_time = max(maximum_time, cont);
 	}
-	
-	for (int i=n-1; i>=0; i--)
-	{
-		if (pila1.empty())
-		{
-			pila1.push(numeros[i]);	
-		}
-		else
-		{
-			if ((numeros[i]) > pila1.top())
-			{
-				pila1.pop();
-				pila1.push(numeros[i]);
-			}
-			else
-			{
-				pila1.push(numeros[i]);
-			}
-		}
-	}
-	int temp2;
-	bool flag=false;
-	
-	while (!pila1.empty())
-	{
-		if (pila2.emtpy())
-		{
-			pila2.push(pila1.top());	
-			pila1.pop();
-		}
-		else
-		{
-			
-			if (flag)
-			{
-				if (temp2>pila1.top())
-				{
-					temp2=pila1.top();
-					pila1.pop();
-				}
-				else
-				{
-					pila2.push(pila1.top);
-					flag=false;
-				}
-				
-			}
-			else
-			{
-				if (pila1.top>pila2.top())
-				{
-					pila2.push(pila1.top());
-					pila1.pop();
-				}
-				else
-				{
-					flag=true;
-					temp2=pila1.top();
-					pila1.pop();
-				}	
-			}
-			
-		}
-		
-		pila1.pop();
-	}
-	
-	
-	
-}
+	cout << maximum_time << endl;
 
-
-
-int main()
-{
-	int n;
-	cin>>n;
-	funcion1(n);
+    
 	return 0;
 }

@@ -54,10 +54,7 @@ void funcion()
 		
 	}
 	
-	cout<<respuesta<<endl;
-	
-	
-	
+	cout<<respuesta<<endl;	
 }
 
 
