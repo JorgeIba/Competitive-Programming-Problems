@@ -13,27 +13,31 @@ using namespace std;
 typedef vector<lli> VLL;
 typedef vector<int> VI;
 
+string f(lli k)
+{
+    if(k == 1) return "2";
+    if(k % 2 == 0)
+    {
+        return "(" + f(k/2) + ")^2";
+    }
+    else
+    {
+        return "(2*" + f(k-1) + ")";
+    }
+}
+
 
 
 int main () {
-	//fastIO();
-    lli n, p, w, d; cin>>n>>p>>w>>d;
+	fastIO();
+    lli t; cin>>t;
 
-    for(lli y = 0; y<w; y++)
-    {
-        if((p - y*d) % w != 0) continue;
-
-        lli x = (p - y*d)/w;
-
-        if(x+y <= n && x >= 0)
-        {
-            cout << x << " " << y << " " << n-x-y << endl;
-            return 0;
-        }
+    while(t--)
+	{
+        lli k; cin>>k;
+        cout << f(k) << endl;
     }
-    
 
-    cout << -1 << endl;
 
 	return 0;
 }

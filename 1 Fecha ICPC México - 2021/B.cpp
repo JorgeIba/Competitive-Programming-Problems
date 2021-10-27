@@ -13,7 +13,6 @@ using namespace std;
 typedef vector<lli> VLL;
 typedef vector<int> VI;
 
-
 int nearestPowerTwo(int n)
 {
     int r = 1;
@@ -79,10 +78,12 @@ vector<T> multiply(vector<T> A, vector<T> B){ //O(n logn) it uses NTT
 }
 
 
+
+
 template<typename T>
 struct Poly{
     vector<T> P;
-    const int p = 998244353 ; //!! change for MOD
+    const lli p = 998244353; //!! change for MOD
 
     Poly(){}
     Poly(int n, int value = 0): P(n, value) {}
@@ -159,18 +160,52 @@ struct Poly{
     Poly operator*(const Poly<T> &A) { 
         return multiply(A.P, P);
     }
-
-    vector<Poly<T>> STM;
-    Poly multiMultiply(const vector<Poly<T>> &Polys)
+     
+    Poly invert(int d = -1) //Returns 1 / F, with d coeffs
     {
-        int n = (int)Polys.size();
-        STM.resize(2*n);
-        for(int i = n; i<2*n; i++) STM[i] = Polys[i-n];
-        for(int i = n-1; i; i--) STM[i] = STM[i<<1] * STM[i<<1 | 1];
-        return STM[1];
+        if(d==-1) d = SZ(P);
+        Poly<T> R_n = vector<T>{ inv(P[0]) }; //equivalent to: 1 / F[0]
+        while(SZ(R_n) <= d)
+        {
+            int j = 2*SZ(R_n);
+            Poly<T> FF = P; FF.resize(j);
+            Poly<T> RnF = R_n*FF;
+            for(auto &x: RnF.P) x = sub(0,x);
+            RnF[0] = add(RnF[0], 2);
+            R_n = R_n * RnF;
+            R_n.resize(j);
+        }
+        R_n.resize(d+1);
+        return R_n;
+    }
+
+    Poly operator/(Poly<T> B) { //Returns Q -> A = Q*B + R
+        Poly<T> A = *this;
+        int n = SZ(A), m = SZ(B);
+        if(n < m) return vector<T>{0};
+        reverse(all(A.P)); reverse(all(B.P));
+        A.resize(n-m+1); B.resize(n-m+1);
+        Poly<T> Q =  A * B.invert();
+        Q.resize(n-m+1);
+        reverse(all(Q.P));
+        return Q;
+    }
+
+    Poly operator%(const Poly<T> &B) { //Return R = A - Q*B
+        Poly<T> A = *this;
+        int n = SZ(A),  m = SZ(B);
+        if(n >= m){
+            Poly<T> R = (A/B)*B;
+            A.resize(m-1);
+            for(int i = 0; i<m-1; i++){
+                A[i] = sub(A[i], R[i]);
+            }
+        }
+        return A;
     }
 
 };
+
 template<typename T>
 ostream& operator<<(ostream &so, const Poly<T> &A)
 {
@@ -178,31 +213,64 @@ ostream& operator<<(ostream &so, const Poly<T> &A)
     return so;
 }
 
+//13
+const lli maxN = 1e6;
+const lli MOD = 998244353; // Initialize
+vector<lli> fact(maxN+1, 1), inv(maxN+1, 1), invFact(maxN+1,1);
+void prec()
+{
+    for(lli i = 2; i < maxN; ++i)
+    {
+        fact[i] = i*fact[i-1] %MOD;
+        inv[i] = MOD - (MOD/i)*inv[MOD%i]%MOD;
+        invFact[i] = (lli)inv[i]*invFact[i-1]%MOD;
+	}
+}
 
+lli binPow(lli a, lli b, lli mod)
+{
+    lli res = 1;
+    while(b)
+    {
+        if(b&1) res = res * a % mod;
+        b >>= 1;
+        a = a * a % mod;
+    }
+    return res;
+}
+
+
+lli maxNP = 2e5;
 
 
 int main () {
 	fastIO();
-    lli n; cin>>n;
 
-    vector<Poly<lli>> polys(n);
-    for(int i = 0; i<n; i++)
+    prec();
+
+    Poly<lli> sen(2*maxNP), cos(2*maxNP);
+
+    for(int n = 0; 2*n + 1 < 2*maxNP; n++)
     {
-        lli x; cin>>x;
-        polys[i] = Poly<lli>(x+1,1);
+        sen[2*n+1] = (n % 2 == 0 ? 1 : MOD-1) * invFact[2*n+1] % MOD;
+        cos[2*n] = (n % 2 == 0 ? 1 : MOD-1) * invFact[2*n] % MOD;
     }
+
+    rotate(sen.P.begin(), sen.P.begin() + 1, sen.P.end());
 
     
-    Poly<lli> ANS = Poly<lli>(1).multiMultiply(polys);
+    auto A = cos * sen.invert(maxNP);
 
-    lli q; cin>>q;
-    while(q--)
+    lli t; cin>>t; 
+
+    while(t--)
     {
-        lli t; cin>>t;
-        if(t >= SZ(ANS)) cout << 0 << endl;
-        else cout << ANS[t] << endl;
+        lli n; cin>>n;
+        cout << (MOD - A[n]) * binPow(2, MOD-2, MOD) % MOD << endl;
     }
-	
+    
+    
+
 	return 0;
 }
 

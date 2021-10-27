@@ -13,12 +13,31 @@ using namespace std;
 typedef vector<lli> VLL;
 typedef vector<int> VI;
 
-lli g(lli p, lli a)
+
+const lli MOD = 1e9+7;
+
+lli binPow(lli a, lli b)
 {
-    return p;
+    lli res = 1; 
+    while(b)
+    {
+        if(b & 1)
+        {
+            res = res * a % MOD;
+        }
+        b >>= 1;
+        a = a * a % MOD;
+    }
+    return res;
 }
 
 
+lli g(lli p, lli a)
+{
+    return binPow(a, p);
+}
+
+//35
 vector<lli> sieveMulFunction(lli n)
 {
     vector<lli> primes, lp(n+1), f(n+1), cnt(n+1), pot(n+1);
@@ -34,13 +53,13 @@ vector<lli> sieveMulFunction(lli n)
             if(d>n) break;
             lp[d] = p;
             if(p == lp[i]){ // lowestPrime[i] == p
-                f[d] = f[ i/pot[i] ] * g(p,cnt[i]+1);
+                f[d] = f[ i/pot[i] ] * g(p,cnt[i]+1) % MOD;
                 pot[d] = pot[i]*p;
                 cnt[d] = cnt[i]+1;
                 break;
             }
             else{ //Coprimes
-                f[d] = f[i]*f[p];
+                f[d] = f[i]*f[p] % MOD;
                 pot[d] = p;
                 cnt[d] = 1;
             }
@@ -50,29 +69,24 @@ vector<lli> sieveMulFunction(lli n)
 }
 
 
-
 int main () {
 	//fastIO();
+    const lli maxN = 5e7+10;
 
-    //lli n; cin>>n;
-    lli n = 1e5+2e4;
-    //lli n = 1e3;
-    auto f = sieveMulFunction(n+10);
-
-    lli sum = 0;
-    for(int a = 1 ; a <= n; a++)
+    vector<lli> ans(maxN+1), f = sieveMulFunction(maxN);
+    for(int i = 1; i < maxN; i++)
     {
-        for(int b = a+1; a+b <= n; b++)
-        {
-            if(__gcd(a,b) == 1)
-            {
-                int c = a+b;
-                sum += (c)*(f[a]*f[b]*f[c] < c);
-            }
-        }
+        ans[i] = (ans[i-1] + f[i]) % MOD;
     }
+
+    lli n; cin>>n;
+
+    cout << ans[n] << endl;
+
+
     
-    cout << sum << endl;
+
+	
 
 
 	return 0;

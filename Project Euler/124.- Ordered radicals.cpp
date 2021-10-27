@@ -18,7 +18,6 @@ lli g(lli p, lli a)
     return p;
 }
 
-
 vector<lli> sieveMulFunction(lli n)
 {
     vector<lli> primes, lp(n+1), f(n+1), cnt(n+1), pot(n+1);
@@ -55,24 +54,18 @@ int main () {
 	//fastIO();
 
     //lli n; cin>>n;
-    lli n = 1e5+2e4;
+    lli n = 1e5;
     //lli n = 1e3;
-    auto f = sieveMulFunction(n+10);
+    auto f = sieveMulFunction(n);
+    vector<pair<lli,lli>> sorted_f(n);
+    for(int i = 1; i<=n; i++) sorted_f[i-1] = {f[i], i};
 
-    lli sum = 0;
-    for(int a = 1 ; a <= n; a++)
-    {
-        for(int b = a+1; a+b <= n; b++)
-        {
-            if(__gcd(a,b) == 1)
-            {
-                int c = a+b;
-                sum += (c)*(f[a]*f[b]*f[c] < c);
-            }
-        }
-    }
-    
-    cout << sum << endl;
+    sort(all(sorted_f));
+
+    //cout << sorted_f[1-1].second << " " << sorted_f[4-1].second << " " << sorted_f[6-1].second << endl;
+
+    lli query = 1e4;
+    cout << sorted_f[query-1].second << endl;
 
 
 	return 0;
