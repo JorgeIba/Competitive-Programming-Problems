@@ -8,20 +8,20 @@ void solve()
     lli n;
     vector<lli> asd(3);
     cin>>asd[0]>>asd[1]>>asd[2]>>n;
-    sort(asd.rbegin(), asd.rend());
-    lli diffAB = asd[0]-asd[1];
-    lli diffAC = asd[0]-asd[2];
-    if(n>= (diffAB+diffAC))
+    sort(asd.rbegin(), asd.rend()); 
+    lli diffAB = asd[0]-asd[1]; // O(cnt)
+    lli diffAC = asd[0]-asd[2]; // O(cnt)
+    if(n >= (diffAB+diffAC)) // O(cnt)
     {
-        n-= (diffAB+diffAC);
+        n -= (diffAB+diffAC); // O(cnt)
     }
     else
     {
-        cout<<"NO\n";
+        cout<<"NO\n"; //O(cnt)
         return;
     }
 
-    if(n%3==0)
+    if(n%3==0) // O(cnt)
     {
         cout<<"YES\n";
         return;
@@ -30,9 +30,10 @@ void solve()
     {
         cout<<"NO\n";
     }
-    
-    
-    
+
+    // O(cnt) * O(cnt) = O(cnt^2) = O(cnt)
+
+    // O(cnt)
 }
 
 

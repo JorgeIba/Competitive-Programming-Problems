@@ -10,10 +10,10 @@ void funcion()
 	bool flag1=false;
 	bool flag2=true;
 	cin>>n;
-	for (int i=1; i<=n; i++ )
+	for (int i=1; i<=n; i++ ) // O(n)
 	{
-		cin>>numero;
-		vec.push_back(numero);
+		cin>>numero; // O(cnt)
+		vec.push_back(numero); //O(cnt)
 		if (numero==n)
 		{
 			posFinal=i;
@@ -22,6 +22,8 @@ void funcion()
 		{
 			posUno=i;
 		}
+
+		// O(cnt)
 	}
 	
 	if (((posUno==1)and(posFinal==n))or((posUno==n)and(posFinal==1)))
@@ -29,7 +31,7 @@ void funcion()
 		flag1=true;
 	}
 	
-	for (int i=0; i<n-1; i++)
+	for (int i=0; i<n-1; i++) // O(n)
 	{
 		if ((vec[i]==1)and(flag1==false))
 		{

@@ -25,6 +25,15 @@ struct Matrix{
         A.assign(n, vector<T>(m));
         pot.resize(30);
     }
+ 
+    Matrix(lli n): rows(n), cols(n) 
+    {
+        A.assign(n, vector<T>(n, 0));
+        for(int i = 0; i<rows; i++)
+        {
+            A[i][i] = 1;
+        }
+    }
 
     vector<T> &operator[] (int i){ return A[i]; }
     const vector<T> &operator[] (int i) const{ return A[i]; }
@@ -61,16 +70,49 @@ struct Matrix{
  
     Matrix operator^(lli e) const{
         Matrix<T> res = Matrix<T>::Identity(rows);
-        Matrix<T> aux = pot[0];
         lli curr = 0;
+        // bool flag = true;
+        
         while(e)
         {
-            if(e&1) res = res*aux;
+            if(e&1){
+                /*
+                if(flag) {
+                    cout << "PRIMERO: ";
+                    pot[curr].printMatrix();
+                    flag = false;
+                }
+                */
+                res = res*pot[curr];
+            } 
             e>>=1;
             curr++;
-            if(e) aux = pot[curr];
         }
         return res;
+    }
+
+    Matrix operator+(const Matrix &B) const{
+        assert(rows == B.rows && cols == B.cols);
+        Matrix<T> C(rows, cols);
+        for(int i = 0; i<rows; i++)
+            for(int j = 0; j<cols; j++)
+                C[i][j] = A[i][j] + B[i][j];
+        return C;
+    }
+
+    //* //////////////////////////////////////////////
+ 
+    void printMatrix()
+    {
+        for(int i = 0; i<rows; i++)
+        {
+            cout<<"|";
+            for(int j = 0; j<cols; j++)
+            {
+                cout<<A[i][j]<< (j!=cols-1? " ": "");
+            }
+            cout<<"|\n";
+        }
     }
 };
 
@@ -86,22 +128,16 @@ bool cmp(Query a, Query b)
     return a.k < b.k;
 }
 
-inline int read()
-{
-	int x=0,f=1,c=getchar();
-	while(c<48) c=='-'&&(f=-1),c=getchar();
-	while(c>47) x=x*10+c-'0',c=getchar();
-	return x*f;
-}
- 
+//vector< Matrix<lli> > pot(31);
+
 int main()
 {
     fastIO();
-    lli n=read(), m=read(), q=read();
+    lli n, m, q; cin>>n>>m>>q;
     Matrix<lli> T(n,n);
     for(int i = 0; i<m; i++)
     {
-        lli u = read(), v = read(); u--, v--;
+        lli u, v; cin>>u>>v; u--, v--;
         T[u][v] = 1;
     }
     
@@ -112,35 +148,38 @@ int main()
         A.pot[i] = A.pot[i-1] * A.pot[i-1];
     }
     
-    vector< tuple<int, int, int, int> > queries(q);
-    for(int i = 0; i<q; i++)
-    {
-        lli s=read(), t=read(), k=read(); s--, t--;
-        queries[i] = {k, s, t, i};
-        //Query Q(s,t,k,i);
-        //queries[i] = Q;
+    for(int i = 0; i < q; i++) { 
+        lli s, t, k; cin>>s>>t>>k; s--, t--;
+
+        // auto S = A^k;
+
+        lli curr = 0;
+        for(int j = 0; j < 30; j++)
+            if((1<<j) & k){
+                curr = j;
+                break;
+            }
+    
+        Matrix<lli> IN = A.pot[curr];
+        Matrix<lli> Q(1, n);
+
+        for(int j = 0; j < n; j++) {
+            Q[0][j] = IN[s][j];
+        }
+
+        k >>= (++curr);
+
+        while(k) {
+            if(k & 1) Q = Q * A.pot[curr];
+            k >>= 1;
+            curr++;
+        }
+
+        cout << Q[0][t] << endl;
     }
 
-    //sort(all(queries), cmp);
-    sort(all(queries));
-    vector< lli > ans(q);
-    lli curr = 1;
-    for(int i = 0; i<q; i++)
-    {
-        //Query C = queries[i];
-        int diff = get<0>(queries[i]) - curr;
-        if(diff > 0)
-        {
-            T = T * (A^diff);
-            curr = get<0>(queries[i]);
-        }
-        ans[get<3>(queries[i])] = T[get<1>(queries[i])][get<2>(queries[i])];
-    }
-    for(int i = 0; i<q; i++)
-    {
-        cout << ans[i] << endl;
-    }
-    
+
+
 
     return 0;
 }

@@ -6,7 +6,7 @@ def PrefixFunction(pattern, n):
         while j > 0 and pattern[i] != pattern[j]:
             j = pi[j-1]
         if pattern[i] == pattern[j]:
-            j+=1
+            j += 1
         pi[i] = j
     return pi
 
@@ -24,10 +24,11 @@ for i in range(n):
     while j > 0 and string_a[i] != pattern[j]:
         j = pi[j-1]
     if string_a[i] == pattern[j]:
-        j+=1
+        j += 1
     if(j == m):
-        j = pi[j-1]
         listAppears.append(i-m+1)
+        j = pi[j-1]
+        
 
 if len(listAppears) != 0:
     print("The index where pattern appears: ")
