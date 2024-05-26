@@ -232,8 +232,7 @@ struct Poly{
 		return ans;
 	}
 
-	Poly interpolate(vector<T> &x, vector<T> &y)
-	{
+	Poly interpolate(vector<T> &x, vector<T> &y){
 		buildSTE(x);
 		int n = SZ(x);
 		Poly<T> pp = STE[1].derivate();

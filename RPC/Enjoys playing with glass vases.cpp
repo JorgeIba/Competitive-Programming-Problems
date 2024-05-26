@@ -69,9 +69,7 @@ int main () {
 
     lli m = ca/g, n = cb/g;
 
-
     lli ans = 2*(m+1-2) + 2*(n+1);
-	
 
     cout << ans << endl;
     

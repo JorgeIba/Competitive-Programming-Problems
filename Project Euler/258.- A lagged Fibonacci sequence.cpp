@@ -31,12 +31,11 @@ vector<lli> powerMod(const vector<lli> &A, const vector<lli> &B, const vector<ll
 
     for(int i = SZ(C)-1; i >= degree; i--){
         for(int j = 0; j < SZ(M); j++) {
-            (C[i - degree + j] += M[j] * C[i]) %= MOD;;
+            (C[i - degree + j] += M[j] * C[i]) %= MOD;
         }
     }
 
     C.resize(min(SZ(C), SZ(M)));
-
     return C;
 }
 
